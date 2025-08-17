@@ -52,4 +52,6 @@ RUN echo '<VirtualHost *:80>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
+# Ejecutar entrypoint y luego Apache
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
