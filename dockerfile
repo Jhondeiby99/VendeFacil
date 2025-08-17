@@ -50,7 +50,9 @@ RUN echo '<VirtualHost *:80>\n\
         Require all granted\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
-
+# Copiar script de entrypoint
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 EXPOSE 80
 # Ejecutar entrypoint y luego Apache
 ENTRYPOINT ["entrypoint.sh"]
