@@ -33,17 +33,7 @@ RUN mkdir -p /var/www/html/database \
 # Generar key de Laravel (si no existe .env, crearlo antes en Render o local)
 RUN if [ ! -f .env ]; then cp .env.example .env; fi \
     && php artisan key:generate --force
-# Limpiar caches y regenerar
-RUN php artisan config:clear \
-    && php artisan cache:clear \
-    && php artisan route:clear \
-    && php artisan view:clear \
-    && php artisan optimize:clear \
-    && npm run build \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan migrate --force
+
 # Compilar frontend con npm
 RUN npm install && npm run build
 
