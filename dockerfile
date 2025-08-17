@@ -4,8 +4,8 @@ FROM php:8.2-apache
 # Instalar dependencias del sistema necesarias
 RUN apt-get update && apt-get install -y \
     git unzip curl libpng-dev libjpeg-dev libfreetype6-dev libonig-dev \
-    libxml2-dev zip nodejs npm \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
+    libxml2-dev zip nodejs npm sqlite3 libsqlite3-dev \
+    && docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Habilitar mod_rewrite en Apache
 RUN a2enmod rewrite
@@ -24,6 +24,11 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Instalar dependencias PHP de Laravel
 RUN composer install --optimize-autoloader --no-dev
+
+# Crear base de datos SQLite vacía
+RUN mkdir -p /var/www/html/database \
+    && touch /var/www/html/database/database.sqlite \
+    && chmod 777 /var/www/html/database/database.sqlite
 
 # Generar key de Laravel (si no existe .env, crearlo antes en Render o local)
 RUN if [ ! -f .env ]; then cp .env.example .env; fi \
