@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Pagination\Paginator;
+
 class VoltServiceProvider extends ServiceProvider
 {
     /**
@@ -20,6 +22,7 @@ class VoltServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useTailwind();
         if (env('APP_ENV') === 'production') {
             URL::forceScheme('https');
         }
