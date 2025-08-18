@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Livewire\Products\ProductList;
 use App\Livewire\Products\ProductForm;
+use App\Livewire\Shop\ShopDashboard;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,8 +22,15 @@ Route::get('product-list', ProductList::class)
 Route::get('product-form', ProductForm::class)
     ->middleware(['auth', 'verified'])
     ->name('product-form');
-    // Editar producto
-Route::get('/products/{id}/edit', \App\Livewire\Products\ProductForm::class)->name('product-edit');
+  
+Route::get('/products/{id}/edit', \App\Livewire\Products\ProductForm::class)
+    ->middleware(['auth', 'verified'])
+    ->name('product-edit');
+
+Route::get('shop-dashboard', ShopDashboard::class)
+    ->name('shop-dashboard');
+
+
 
 
 Route::middleware(['auth'])->group(function () {

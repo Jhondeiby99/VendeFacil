@@ -5,14 +5,22 @@ namespace App\Livewire\Products;
 use Livewire\Component;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class ProductList extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'tailwind';
     public $search = ''; // Para el buscador
 
     protected $listeners = ['productUpdated' => '$refresh']; // Refrescar si se actualiza un producto
 
-    public function delete($id)
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }  
+
+    public function deleteProduct($id)
     {
         $product = Product::findOrFail($id);
         $product->delete();
@@ -28,7 +36,7 @@ class ProductList extends Component
         $products = Product::where('name', 'like', '%' . $this->search . '%')
             ->orWhere('description', 'like', '%' . $this->search . '%')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(9);
 
         return view('livewire.products.product-list', compact('products'));
     }
