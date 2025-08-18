@@ -1,7 +1,7 @@
 <div class="p-4">
 
     <!-- Buscador -->
-    <div class="sticky top-0 bg-white dark:bg-zinc-900 z-50 mb-6 flex justify-center gap-4 p-2 shadow">
+    <div class="sticky top-0 z-50 mb-6 flex justify-center gap-4 p-2 shadow">
         <input 
             type="text" 
             wire:model.live.debounce.500ms="search" 

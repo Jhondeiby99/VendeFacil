@@ -5,94 +5,84 @@ namespace App\Livewire\Shop;
 use Livewire\Component;
 use App\Models\Product;
 use Livewire\WithPagination;
+use App\Services\CartService;
 
 class ShopDashboard extends Component
 {
-    
     use WithPagination;
+
     protected $paginationTheme = 'tailwind';
+    
     public $search = '';
     public $cart = []; // ['productId' => quantity]
-    
 
     protected $listeners = ['productAdded' => '$refresh', 'productRemoved' => '$refresh', 'productUpdated' => '$refresh'];
+
+    // 👇 la hacemos protected y sin tipado
+    protected $cartService;
+    
+
+
 
     public function updatingSearch()
     {
         $this->resetPage();
     }   
-
-    public function addToCart($productId, $quantity = 1)
+    
+    public function addToCart($productId, $qty = 1)
     {
-        $product = Product::find($productId);
-        if (isset($this->cart[$productId]) && $quantity <= $product->stock) {
-            if( $this->cart[$productId] + $quantity > $product->find($productId)->stock) {
-                session()->flash('errorp', "Solo hay {$product->stock} unidades disponibles de {$product->name}.");
-                return;
-            }
-            $this->cart[$productId] += $quantity;
-        } else {
-            $this->cart[$productId] = $quantity;
-        }
+        $cartService = app(CartService::class); // 👈 siempre resuelto
+        [$ok, $msg] = $cartService->add($productId, $qty);
+        if (!$ok) session()->flash('errorp', $msg);
+        $this->cart = $cartService->getCartMap();
+
+        $this->dispatch('notify', type: $ok ? 'success' : 'error', message: $msg);
     }
 
     public function removeFromCart($productId)
     {
-        unset($this->cart[$productId]);
+        $cartService = app(CartService::class); // 👈 siempre resuelto
+        [$ok, $msg] = $cartService->remove($productId);
+        $this->cart = $cartService->getCartMap();
     }
 
-    public function updateQuantity($productId, $quantity)
-{
-    $product = Product::find($productId);
-
-    if (!$product) return;
-
-    if ($quantity <= 0) {
-        $this->removeFromCart($productId);
-        return;
+    public function updateQuantity($productId, $qty)
+    {
+        $cartService = app(CartService::class); // 👈 siempre resuelto
+        [$ok, $msg] = $cartService->update($productId, (int)$qty);
+        if (!$ok) session()->flash('error', $msg);
+        $this->cart = $cartService->getCartMap();
     }
-
-    if ($quantity > $product->stock) {
-        session()->flash('error', "Solo hay {$product->stock} unidades disponibles de {$product->name}.");
-        $this->cart[$productId] = $product->stock; // limita al máximo permitido
-        return;
-    }
-
-    $this->cart[$productId] = $quantity;
-}
-
 
     public function getCartItemsProperty()
     {
-        $ids = array_keys($this->cart); // extrae solo los IDs
-        return Product::whereIn('id', $ids)->get();
+        return app(CartService::class)->items();
     }
-
 
     public function getCartTotalProperty()
     {
-        $total = 0;
-        foreach ($this->cartItems as $item) {
-            $total += $item->price * $this->cart[$item->id];
-        }
-        return $total;
+        return app(CartService::class)->total();
     }
 
-    
 
     public function render()
     {
-            $products = Product::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('description', 'like', '%' . $this->search . '%')
-            ->orderBy('created_at', 'desc')
+        $cartService = app(CartService::class);
+        $this->cart = $cartService->getCartMap();
+        $products = Product::query()
+            ->when($this->search, function($q) {
+                $q->where(function($qq){
+                    $qq->where('name','like','%'.$this->search.'%')
+                       ->orWhere('description','like','%'.$this->search.'%');
+                });
+            })
+            ->orderByDesc('created_at')
             ->paginate(9);
 
         return view('livewire.shop.shop-dashboard', [
-            'products' => $products,
+            'products'  => $products,
             'cartItems' => $this->cartItems,
             'cartTotal' => $this->cartTotal,
         ]);
     }
-
-
 }

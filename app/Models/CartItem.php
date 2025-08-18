@@ -9,30 +9,22 @@ class CartItem extends Model
 {
     use HasFactory;
 
-    // Si la tabla se llama cart_items no hace falta $table.
-    // protected $table = 'cart_items';
-
     protected $fillable = [
-        'user_id',      // nullable si el usuario no está logueado
-        'session_id',   // para invitados
+        'cart_id',
         'product_id',
         'quantity',
-        'unit_price',   // precio en el momento de agregar
+        'price',
     ];
 
-    protected $casts = [
-        'quantity'   => 'integer',
-        'unit_price' => 'decimal:2',
-    ];
+    // Relación con el carrito
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
+    }
 
-    // Relaciones
+    // Relación con el producto
     public function product()
     {
         return $this->belongsTo(Product::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class);
     }
 }
