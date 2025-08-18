@@ -9,27 +9,32 @@ return new class extends Migration {
     {
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
-
-            // Si el usuario está logueado
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
-
-            // Si el usuario no está logueado -> lo guardamos con session_id
-            $table->string('session_id')->nullable()->index();
-
-            // Relación con producto
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-
+            $table->foreignId('cart_id')->constrained('carts')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->integer('quantity')->default(1);
-
-            // Precio al momento de añadir al carrito (por si cambia en el futuro)
-            $table->decimal('price', 10, 2);
-
+            $table->decimal('price', 8, 2);  // Precio del producto en el momento de agregarlo al carrito
             $table->timestamps();
         });
+        Schema::create('carts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('status', ['active', 'completed', 'abandoned'])->default('active');
+            $table->timestamps();
+        });
+
+        Schema::create('cart_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');  // Ejemplo: "Active", "Completed", "Abandoned"
+            $table->timestamps();
+        });
+
     }
 
     public function down(): void
     {
         Schema::dropIfExists('cart_items');
+        Schema::dropIfExists('carts');
+        Schema::dropIfExists('cart_statuses');
     }
+    
 };
