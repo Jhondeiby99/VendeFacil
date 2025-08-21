@@ -1,4 +1,4 @@
-<div class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
+<div class="max-w-3xl mx-auto p-6 rounded-xl shadow-md">
 
     <h1 class="text-2xl font-bold mb-4">Finalizar compra</h1>
 
