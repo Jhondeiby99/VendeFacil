@@ -20,6 +20,15 @@ class CartService
 
         return Session::get('cart', []);
     }
+    public function clear(): void
+    {
+        if (Auth::check()) {
+            $cart = $this->getActiveCartForUser(Auth::user());
+            $cart->items()->delete(); // Borra todos los items de la BD
+        } else {
+            Session::forget('cart'); // Borra el carrito de sesión
+        }
+    }
 
     /** Obtiene o crea el carrito activo del usuario */
     private function getActiveCartForUser($user): Cart

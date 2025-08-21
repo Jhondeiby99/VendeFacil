@@ -22,11 +22,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('cart_statuses', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');  // Ejemplo: "Active", "Completed", "Abandoned"
-            $table->timestamps();
-        });
 
     }
 
@@ -34,7 +29,6 @@ return new class extends Migration {
     {
         Schema::dropIfExists('cart_items');
         Schema::dropIfExists('carts');
-        Schema::dropIfExists('cart_statuses');
     }
     
 };

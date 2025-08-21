@@ -5,6 +5,8 @@ use Livewire\Volt\Volt;
 use App\Livewire\Products\ProductList;
 use App\Livewire\Products\ProductForm;
 use App\Livewire\Shop\ShopDashboard;
+use App\Livewire\Shop\Checkout;
+use App\Livewire\Shop\Factura;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +31,15 @@ Route::get('/products/{id}/edit', \App\Livewire\Products\ProductForm::class)
 
 Route::get('shop-dashboard', ShopDashboard::class)
     ->name('shop-dashboard');
+
+Route::get('checkout', Checkout::class)
+    ->middleware(['auth', 'verified'])
+    ->name('checkout');
+
+Route::get('factura/{factura}', Factura::class)
+    ->middleware(['auth', 'verified'])
+    ->name('factura');
+    
 
 
 
