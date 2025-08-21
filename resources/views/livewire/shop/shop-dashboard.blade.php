@@ -121,9 +121,16 @@
                     <span>${{ number_format($cartTotal, 2) }}</span>
                 </div>
 
-                <flux:button variant="primary" class="mt-4 w-full">
-                    Proceder a pagar
+                <flux:button 
+                    variant="primary" 
+                    class="mt-4 w-full" 
+                    :href="route('checkout')" 
+                    :current="request()->routeIs('checkout')" 
+                    wire:navigate
+                >
+                    {{ __('Proceder a pagar') }}
                 </flux:button>
+
             @else
                 <p class="mt-2">Tu carrito está vacío.</p>
             @endif
@@ -132,6 +139,7 @@
                     {{ session('error') }}
                 </div>
             @endif
+            
         </div>
     </flux:modal>    
 

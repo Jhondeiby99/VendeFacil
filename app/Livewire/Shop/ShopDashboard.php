@@ -74,8 +74,13 @@ class ShopDashboard extends Component
                 $q->where(function($qq){
                     $qq->where('name','like','%'.$this->search.'%')
                        ->orWhere('description','like','%'.$this->search.'%');
-                });
-            })
+                })
+                ->Where('stock', '>', 0);
+            }
+            , function ($q) {
+            // Si no hay búsqueda, igual queremos productos con stock
+            $q->where('stock', '>', 0);
+        })
             ->orderByDesc('created_at')
             ->paginate(9);
 
